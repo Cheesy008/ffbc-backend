@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create User Story"
+  short_description: "Draft FFBC business-analysis user stories"
+  default_prompt: "Use $create-user-story with a target filepath and story name to write a Russian User Story."

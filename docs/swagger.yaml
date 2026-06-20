@@ -1,0 +1,1843 @@
+openapi: 3.1.0
+info:
+  title: FFBC Admin Panel API
+  description: |-
+    API for the FFBC Admin Panel service. It supports CRUD operations for platform entities.
+
+    - [FFBC Documentation](https://github.com/cbrgpl/ffbc/tree/main/docs)
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: FFBC Documentation
+  url: https://github.com/cbrgpl/ffbc/tree/main/docs
+servers:
+  - url: https://virtserver.swaggerhub.com/cybirgplorganization/ffbc-admin-panel/1.0.0
+    description: SwaggerHub API Auto Mocking
+tags:
+  - name: auth
+    description: Authentication operations
+  - name: input-characteristic
+    description: Input characteristic operations
+  - name: service-category
+    description: Service category operations
+  - name: service-modifier
+    description: Service modifier operations
+  - name: service
+    description: Service operations
+  - name: s3
+    description: S3 compatible file operations
+paths:
+  /auth/login-with-credentials:
+    post:
+      tags:
+        - auth
+      summary: Login with credentials.
+      operationId: loginWithCredentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginWithCredentialsRequestDto'
+      responses:
+        '200':
+          description: Logged in. Authentication tokens are stored in cookies.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Logout current user.
+      operationId: logout
+      responses:
+        '204':
+          description: Logged out.
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /input-characteristic:
+    get:
+      tags:
+        - input-characteristic
+      summary: Get input characteristics list.
+      operationId: getInputCharacteristics
+      parameters:
+        - name: search
+          in: query
+          description: Value used to filter records.
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Number of records to skip before returning results.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: count
+          in: query
+          description: Maximum number of records to return.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Input characteristics list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InputCharacteristicDto'
+        '204':
+          description: No input characteristics found.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /input-characteristic/bulk:
+    post:
+      tags:
+        - input-characteristic
+      summary: Add new input characteristics.
+      operationId: bulkCreateInputCharacteristic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/InputCharacteristicCreateDto'
+      responses:
+        '200':
+          description: Created input characteristics.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InputCharacteristicDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /input-characteristic/{id}:
+    patch:
+      tags:
+        - input-characteristic
+      summary: Change existing input characteristic.
+      operationId: updateInputCharacteristic
+      parameters:
+        - name: id
+          in: path
+          description: Input characteristic identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputCharacteristicUpdateDto'
+      responses:
+        '200':
+          description: Updated input characteristic.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputCharacteristicDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /input-characteristic-template:
+    get:
+      tags:
+        - input-characteristic
+      summary: Get input characteristic templates list.
+      operationId: getInputCharacteristicTemplates
+      parameters:
+        - name: search
+          in: query
+          description: Value used to filter records.
+          required: false
+          schema:
+            type: string
+        - name: inputCharacteristics
+          in: query
+          description: Input characteristic identifiers used to filter records.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: offset
+          in: query
+          description: Number of records to skip before returning results.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: count
+          in: query
+          description: Maximum number of records to return.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: sortBy
+          in: query
+          description: Field used to sort records.
+          required: false
+          schema:
+            type: string
+            enum:
+              - name
+            default: name
+        - name: sortOrder
+          in: query
+          description: Sort direction.
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        '200':
+          description: Input characteristic templates list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InputCharacteristicTemplateShortDto'
+        '204':
+          description: No input characteristic templates found.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    post:
+      tags:
+        - input-characteristic
+      summary: Add a new input characteristic template.
+      operationId: createInputCharacteristicTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputCharacteristicTemplateCreateDto'
+      responses:
+        '200':
+          description: Created input characteristic template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputCharacteristicTemplateDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /input-characteristic-template/{id}:
+    get:
+      tags:
+        - input-characteristic
+      summary: Get input characteristic template by id.
+      operationId: getInputCharacteristicTemplate
+      parameters:
+        - name: id
+          in: path
+          description: Input characteristic template identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Input characteristic template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputCharacteristicTemplateDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Input characteristic template not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    patch:
+      tags:
+        - input-characteristic
+      summary: Change existing input characteristic template.
+      operationId: updateInputCharacteristicTemplate
+      parameters:
+        - name: id
+          in: path
+          description: Input characteristic template identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputCharacteristicTemplateUpdateDto'
+      responses:
+        '200':
+          description: Updated input characteristic template.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputCharacteristicTemplateDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    delete:
+      tags:
+        - input-characteristic
+      summary: Delete existing input characteristic template.
+      operationId: deleteInputCharacteristicTemplate
+      parameters:
+        - name: id
+          in: path
+          description: Input characteristic template identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted input characteristic template.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service-category:
+    get:
+      tags:
+        - service-category
+      summary: Get service categories list.
+      operationId: getServiceCategories
+      parameters:
+        - name: search
+          in: query
+          description: Value used to filter records.
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Number of records to skip before returning results.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: count
+          in: query
+          description: Maximum number of records to return.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: sortBy
+          in: query
+          description: Field used to sort records.
+          required: false
+          schema:
+            type: string
+            enum:
+              - name
+            default: name
+        - name: sortOrder
+          in: query
+          description: Sort direction.
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        '200':
+          description: Service categories list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceCategoryDto'
+        '204':
+          description: No service categories found.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    post:
+      tags:
+        - service-category
+      summary: Add a new service category.
+      operationId: createServiceCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCategoryCreateDto'
+      responses:
+        '200':
+          description: Created service category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceCategoryDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service-category/{id}:
+    patch:
+      tags:
+        - service-category
+      summary: Change existing service category.
+      operationId: updateServiceCategory
+      parameters:
+        - name: id
+          in: path
+          description: Service category identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCategoryUpdateDto'
+      responses:
+        '200':
+          description: Updated service category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceCategoryDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    delete:
+      tags:
+        - service-category
+      summary: Delete existing service category.
+      operationId: deleteServiceCategory
+      parameters:
+        - name: id
+          in: path
+          description: Service category identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted service category.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service-modifier:
+    post:
+      tags:
+        - service-modifier
+      summary: Add a new service modifier.
+      operationId: createServiceModifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceModifierCreateDto'
+      responses:
+        '200':
+          description: Created service modifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceModifierDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service-modifier/{id}:
+    patch:
+      tags:
+        - service-modifier
+      summary: Change existing service modifier.
+      operationId: updateServiceModifier
+      parameters:
+        - name: id
+          in: path
+          description: Service modifier identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceModifierUpdateDto'
+      responses:
+        '200':
+          description: Updated service modifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceModifierDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    delete:
+      tags:
+        - service-modifier
+      summary: Delete existing service modifier.
+      operationId: deleteServiceModifier
+      parameters:
+        - name: id
+          in: path
+          description: Service modifier identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted service modifier.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service/creation:
+    get:
+      tags:
+        - service
+      summary: Get creation services list.
+      operationId: getCreationServices
+      parameters:
+        - name: search
+          in: query
+          description: Value used to filter records.
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Number of records to skip before returning results.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: count
+          in: query
+          description: Maximum number of records to return.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Creation services list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BaseServiceDto'
+        '204':
+          description: No creation services found.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    post:
+      tags:
+        - service
+      summary: Add a new creation service.
+      operationId: createCreationService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreationServiceCreateDto'
+      responses:
+        '200':
+          description: Created creation service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service/creation/{id}:
+    get:
+      tags:
+        - service
+      summary: Get creation service.
+      operationId: getCreationService
+      parameters:
+        - name: id
+          in: path
+          description: Service identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Creation service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    patch:
+      tags:
+        - service
+      summary: Change existing creation service.
+      operationId: updateCreationService
+      parameters:
+        - name: id
+          in: path
+          description: Service identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreationServiceUpdateDto'
+      responses:
+        '200':
+          description: Updated creation service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreationServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service/selling:
+    get:
+      tags:
+        - service
+      summary: Get selling services list.
+      operationId: getSellingServices
+      parameters:
+        - name: search
+          in: query
+          description: Value used to filter records.
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Number of records to skip before returning results.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: count
+          in: query
+          description: Maximum number of records to return.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Selling services list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BaseServiceDto'
+        '204':
+          description: No selling services found.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    post:
+      tags:
+        - service
+      summary: Add a new selling service.
+      operationId: createSellingService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellingServiceCreateDto'
+      responses:
+        '200':
+          description: Created selling service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellingServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service/selling/{id}:
+    get:
+      tags:
+        - service
+      summary: Get selling service.
+      operationId: getSellingService
+      parameters:
+        - name: id
+          in: path
+          description: Service identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Selling service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellingServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+    patch:
+      tags:
+        - service
+      summary: Change existing selling service.
+      operationId: updateSellingService
+      parameters:
+        - name: id
+          in: path
+          description: Service identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellingServiceUpdateDto'
+      responses:
+        '200':
+          description: Updated selling service.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SellingServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service/{id}:
+    delete:
+      tags:
+        - service
+      summary: Delete existing service.
+      operationId: deleteService
+      parameters:
+        - name: id
+          in: path
+          description: Service identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted service.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /service/{id}/media:
+    patch:
+      tags:
+        - service
+      summary: Change existing service media.
+      operationId: updateServiceMedia
+      parameters:
+        - name: id
+          in: path
+          description: Service identifier.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServiceMediaDto'
+      responses:
+        '200':
+          description: Updated service media.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CreationServiceDto'
+                  - $ref: '#/components/schemas/SellingServiceDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+  /file:
+    post:
+      tags:
+        - s3
+      summary: Upload file.
+      description: Uploads a file stream to S3 compatible storage.
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUploadDto'
+      responses:
+        '200':
+          description: Uploaded file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDto'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ffbc_admin_auth:
+            - admin
+components:
+  schemas:
+    LoginWithCredentialsRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+    InputCharacteristicsType:
+      type: string
+      enum:
+        - number
+        - measuring
+        - text
+        - boolean
+        - media
+    InputCharacteristicDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/InputCharacteristicsType'
+      required:
+        - id
+        - name
+        - type
+    InputCharacteristicCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/InputCharacteristicsType'
+      required:
+        - name
+        - type
+    InputCharacteristicUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/InputCharacteristicsType'
+      minProperties: 1
+    InputCharacteristicTemplateDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        inputCharacteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/InputCharacteristicDto'
+        description:
+          type:
+            - string
+            - 'null'
+      required:
+        - id
+        - name
+        - inputCharacteristics
+        - description
+    InputCharacteristicTemplateShortDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+      required:
+        - id
+        - name
+        - description
+    InputCharacteristicTemplateCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        inputCharacteristics:
+          type: array
+          items:
+            type: string
+        description:
+          type:
+            - string
+            - 'null'
+      required:
+        - name
+        - inputCharacteristics
+        - description
+    InputCharacteristicTemplateUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        inputCharacteristics:
+          type: array
+          items:
+            type: string
+        description:
+          type:
+            - string
+            - 'null'
+    ServiceCategoryDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      required:
+        - id
+        - name
+    ServiceCategoryCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    ServiceCategoryUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+      minProperties: 1
+    ServiceType:
+      type: string
+      enum:
+        - creation
+        - selling
+    ServiceStatus:
+      type: string
+      enum:
+        - base_info_required
+        - media_required
+        - active
+        - disabled
+    FileDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Storage identifier.
+        storageKey:
+          type: string
+          description: Storage key.
+        mimeType:
+          type: string
+        size:
+          type: integer
+          minimum: 0
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - storageKey
+        - mimeType
+        - size
+        - updatedAt
+    FileUploadDto:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+        - file
+    BaseServiceDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceMediaDto'
+      required:
+        - id
+        - name
+        - basePrice
+        - description
+        - media
+    ServiceInputCharacteristicDto:
+      type: object
+      properties:
+        inputCharacteristic:
+          $ref: '#/components/schemas/InputCharacteristicDto'
+        isRequired:
+          type: boolean
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+      required:
+        - inputCharacteristic
+        - isRequired
+        - sortOrder
+    ServiceInputCharacteristicCreateDto:
+      type: object
+      properties:
+        inputCharacteristic:
+          type: string
+        isRequired:
+          type: boolean
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+      required:
+        - inputCharacteristic
+        - isRequired
+        - sortOrder
+    CreationServiceDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+        status:
+          $ref: '#/components/schemas/ServiceStatus'
+        inputCharacteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInputCharacteristicDto'
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModifierDto'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceCategoryDto'
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceMediaDto'
+      required:
+        - id
+        - name
+        - basePrice
+        - description
+        - status
+        - inputCharacteristics
+        - modifiers
+        - categories
+        - media
+    SellingServiceDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+        status:
+          $ref: '#/components/schemas/ServiceStatus'
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModifierDto'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceCategoryDto'
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceMediaDto'
+      required:
+        - id
+        - name
+        - basePrice
+        - description
+        - status
+        - modifiers
+        - categories
+        - media
+    SellingServiceCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+      required:
+        - name
+        - basePrice
+        - description
+    CreationServiceCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+        inputCharacteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInputCharacteristicCreateDto'
+      required:
+        - name
+        - basePrice
+        - description
+        - inputCharacteristics
+    SellingServiceUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+      minProperties: 1
+    CreationServiceUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        basePrice:
+          type: number
+          minimum: 0
+        description:
+          type:
+            - string
+            - 'null'
+        inputCharacteristics:
+          type: array
+          items:
+            type: string
+      minProperties: 1
+    ServiceMediaDto:
+      type: object
+      properties:
+        file:
+          $ref: '#/components/schemas/FileDto'
+        altText:
+          type:
+            - string
+            - 'null'
+        caption:
+          type:
+            - string
+            - 'null'
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - file
+        - altText
+        - caption
+        - sortOrder
+        - createdAt
+        - updatedAt
+    ServiceModifiersType:
+      type: string
+      enum:
+        - single
+        - multiple
+    ServiceModifierDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        serviceId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        selectionType:
+          $ref: '#/components/schemas/ServiceModifiersType'
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+        isRequired:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModifierValueDto'
+      required:
+        - id
+        - serviceId
+        - name
+        - selectionType
+        - sortOrder
+        - isRequired
+        - values
+    ServiceModifierCreateDto:
+      type: object
+      properties:
+        serviceId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        selectionType:
+          $ref: '#/components/schemas/ServiceModifiersType'
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+        isRequired:
+          type: boolean
+          default: true
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModifierValueCreateDto'
+      required:
+        - serviceId
+        - name
+        - selectionType
+        - values
+    ServiceModifierUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        selectionType:
+          $ref: '#/components/schemas/ServiceModifiersType'
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+        isRequired:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModifierValueCreateDto'
+      minProperties: 1
+    ServiceModifierValueDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        additionalPrice:
+          type: number
+          minimum: 0
+        isActive:
+          type: boolean
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+      required:
+        - id
+        - name
+        - additionalPrice
+        - isActive
+        - sortOrder
+    ServiceModifierValueCreateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        additionalPrice:
+          type: number
+          minimum: 0
+        isActive:
+          type: boolean
+        sortOrder:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+      required:
+        - name
+        - additionalPrice
+        - isActive
+        - sortOrder
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+  securitySchemes:
+    ffbc_admin_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://auth.ffbc.example.com/oauth/authorize
+          scopes:
+            admin: Full administrative access.

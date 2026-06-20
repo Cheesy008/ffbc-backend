@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: ffbc-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: "8080"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ffbc
+      DB_USER: ffbc
+      DB_PASSWORD: ffbc
+      DB_SSLMODE: disable
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - go_mod_cache:/go/pkg/mod
+      - go_build_cache:/root/.cache/go-build
+
+  postgres:
+    image: postgres:17
+    container_name: ffbc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ffbc
+      POSTGRES_USER: ffbc
+      POSTGRES_PASSWORD: ffbc
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ffbc -d ffbc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  go_mod_cache:
+  go_build_cache:

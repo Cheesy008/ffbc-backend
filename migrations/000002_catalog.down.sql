@@ -1,0 +1,19 @@
+DROP TABLE IF EXISTS "service_products_modifier_values";
+DROP TABLE IF EXISTS "service_product_input_characteristics_values";
+DROP TABLE IF EXISTS "service_products";
+DROP TABLE IF EXISTS "service_modifier_values";
+DROP TABLE IF EXISTS "service_modifiers";
+DROP TABLE IF EXISTS "service_input_characteristics";
+DROP TABLE IF EXISTS "service_media_files";
+DROP TABLE IF EXISTS "service_categories_services";
+DROP TABLE IF EXISTS "service_category_services";
+DROP TABLE IF EXISTS "input_characteristic_template_items";
+DROP TABLE IF EXISTS "services";
+DROP TABLE IF EXISTS "input_characteristics";
+DROP TABLE IF EXISTS "input_characteristics_templates";
+DROP TABLE IF EXISTS "service_categories";
+
+DROP TYPE IF EXISTS "service_status";
+DROP TYPE IF EXISTS "service_type";
+DROP TYPE IF EXISTS "service_modifiers_type";
+DROP TYPE IF EXISTS "input_characteristics_type";

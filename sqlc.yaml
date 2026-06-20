@@ -1,0 +1,63 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema:
+      - "migrations"
+    queries:
+      - "internal/admin/repository/postgres/sqlc/queries.sql"
+    gen:
+      go:
+        package: "adminsqlc"
+        out: "internal/admin/repository/postgres/sqlc/generated"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_empty_slices: true
+        overrides:
+          - db_type: "text"
+            nullable: true
+            go_type:
+              type: "string"
+              pointer: true
+
+          - db_type: "timestamptz"
+            nullable: true
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+
+          - db_type: "timestamptz"
+            nullable: false
+            go_type:
+              import: "time"
+              type: "Time"
+  - engine: "postgresql"
+    schema:
+      - "migrations"
+    queries:
+      - "internal/catalog/repository/postgres/sqlc/queries.sql"
+    gen:
+      go:
+        package: "catalogsqlc"
+        out: "internal/catalog/repository/postgres/sqlc/generated"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_empty_slices: true
+        overrides:
+          - db_type: "text"
+            nullable: true
+            go_type:
+              type: "string"
+              pointer: true
+          - db_type: "timestamptz"
+            nullable: true
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+          - db_type: "timestamptz"
+            nullable: false
+            go_type:
+              import: "time"
+              type: "Time"
+

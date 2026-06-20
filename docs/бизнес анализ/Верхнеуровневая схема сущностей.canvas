@@ -1,0 +1,35 @@
+{
+	"nodes":[
+		{"id":"8336268b42f3bc60","type":"text","text":"Другая инфа(текст, фото, видео)","x":-820,"y":-820,"width":250,"height":60,"color":"5"},
+		{"id":"a735f5933491ef57","type":"text","text":"Мерки экземпляра продукта","x":-695,"y":-450,"width":250,"height":60,"color":"2"},
+		{"id":"b4356bb0b7852883","type":"text","text":"Заказ","x":-409,"y":-930,"width":250,"height":60,"color":"5"},
+		{"id":"8593bab97efd8d15","type":"text","text":"Особенность экземпляра продукта","x":-409,"y":-300,"width":250,"height":60,"color":"2"},
+		{"id":"84b7a66e41632211","type":"text","text":"Экземпляр продукта ручного создания","x":-370,"y":-580,"width":250,"height":60,"color":"2"},
+		{"id":"cb197ddb0abd95b4","type":"text","text":"Клиент","x":-120,"y":-1100,"width":250,"height":60,"color":"#131a7c"},
+		{"id":"7f37248dc5b1d24c","type":"text","text":"Группа мерок","x":25,"y":0,"width":250,"height":50,"color":"2"},
+		{"id":"d015110e869505c4","type":"text","text":"Продукт ручного создания","x":210,"y":-500,"width":250,"height":50,"color":"2"},
+		{"id":"f5fa6ef8434412a3","type":"text","text":"Модификатор","x":485,"y":-140,"width":250,"height":50,"color":"2"},
+		{"id":"bb4c01a803453b0a","type":"text","text":"Значение модификатора","x":485,"y":25,"width":250,"height":50,"color":"2"},
+		{"id":"8e18ea52fca9b7fc","type":"text","text":"Продукт на перепродажу","x":905,"y":-900,"width":250,"height":50,"color":"4"},
+		{"id":"0343598c727f4e02","type":"text","text":"Лот продукта","x":655,"y":-680,"width":250,"height":50,"color":"6"},
+		{"id":"bec3cf5f42a68d1f","type":"text","text":"Мерка","x":80,"y":140,"width":250,"height":50,"color":"2"}
+	],
+	"edges":[
+		{"id":"8a753807c828ca92","fromNode":"d015110e869505c4","fromSide":"left","toNode":"7f37248dc5b1d24c","toSide":"top","label":"Ссылается\nM"},
+		{"id":"5fdc04850eba1c5f","fromNode":"d015110e869505c4","fromSide":"right","toNode":"f5fa6ef8434412a3","toSide":"top","label":"Ссылается\nM"},
+		{"id":"d94be63fd273af75","fromNode":"f5fa6ef8434412a3","fromSide":"bottom","toNode":"bb4c01a803453b0a","toSide":"top","label":"Содержит\nM"},
+		{"id":"fd5aef6278e488bf","fromNode":"b4356bb0b7852883","fromSide":"bottom","toNode":"84b7a66e41632211","toSide":"top","label":"Содержит\nM"},
+		{"id":"4f23d0cb53b952b7","fromNode":"b4356bb0b7852883","fromSide":"left","toNode":"8336268b42f3bc60","toSide":"top","label":"Содержит"},
+		{"id":"a5c08faa4e1397bf","fromNode":"84b7a66e41632211","fromSide":"bottom","toNode":"a735f5933491ef57","toSide":"top","label":"Содержит\nM"},
+		{"id":"164b205347b39377","fromNode":"84b7a66e41632211","fromSide":"bottom","toNode":"8593bab97efd8d15","toSide":"top","label":"Содержит\nM"},
+		{"id":"8a8233ede7fc7d6c","fromNode":"84b7a66e41632211","fromSide":"right","toNode":"d015110e869505c4","toSide":"top","color":"1","label":"Ссылается"},
+		{"id":"243d378b12521849","fromNode":"cb197ddb0abd95b4","fromSide":"left","toNode":"b4356bb0b7852883","toSide":"top","label":"Имеет\nM"},
+		{"id":"f0302e0add2c97e0","fromNode":"8593bab97efd8d15","fromSide":"bottom","toNode":"bb4c01a803453b0a","toSide":"left","color":"1","label":"Копия"},
+		{"id":"fbf2159544f2a8b0","fromNode":"a735f5933491ef57","fromSide":"bottom","toNode":"bec3cf5f42a68d1f","toSide":"left","color":"1","label":"Ссылается"},
+		{"id":"cf97a0231f9454fe","fromNode":"7f37248dc5b1d24c","fromSide":"bottom","toNode":"bec3cf5f42a68d1f","toSide":"top","label":"Содержит\nМ"},
+		{"id":"7ef605d62def37e5","fromNode":"b4356bb0b7852883","fromSide":"bottom","toNode":"0343598c727f4e02","toSide":"top","label":"Содержит"},
+		{"id":"d2e3f6c2a284cb2a","fromNode":"b4356bb0b7852883","fromSide":"bottom","toNode":"8e18ea52fca9b7fc","toSide":"top","label":"Содержит"},
+		{"id":"59bb75ad70c77d3d","fromNode":"0343598c727f4e02","fromSide":"bottom","toNode":"d015110e869505c4","toSide":"top","color":"1","label":"Ссылается"},
+		{"id":"38d57f03f537bc03","fromNode":"d015110e869505c4","fromSide":"bottom","toNode":"bec3cf5f42a68d1f","toSide":"right","label":"Ссылается\nм"}
+	]
+}
