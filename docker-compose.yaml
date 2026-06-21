@@ -42,11 +42,18 @@ services:
       DB_SSLMODE: disable
 
   migrate:
-    image: migrate/migrate:v4.18.3
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
     profiles: ["tools"]
     depends_on:
       postgres:
         condition: service_healthy
+
+  migrate-create:
+    image: migrate/migrate:v4.18.3
+    profiles: ["tools"]
     volumes:
       - ${MIGRATIONS_DIR:-./migrations}:/migrations
 

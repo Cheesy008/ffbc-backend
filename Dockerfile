@@ -26,6 +26,10 @@ COPY --from=builder /out/adminctl /app/adminctl
 
 ENTRYPOINT ["/app/adminctl"]
 
+FROM migrate/migrate:v4.18.3 AS migrate
+
+COPY migrations /migrations
+
 FROM gcr.io/distroless/base-debian12
 
 WORKDIR /app

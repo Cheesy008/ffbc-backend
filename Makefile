@@ -25,17 +25,17 @@ create-admin:
 migrate-create:
 	@test -n "$(name)" || (echo "Usage: make migrate-create name=create_table_name" && exit 1)
 	mkdir -p $(MIGRATIONS_DIR)
-	docker compose run --rm --user "$(shell id -u):$(shell id -g)" migrate create -ext sql -dir /migrations -seq $(name)
+	docker compose run --rm --user "$(shell id -u):$(shell id -g)" migrate-create create -ext sql -dir /migrations -seq $(name)
 
 migrate-up:
-	docker compose run --rm migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" up
+	docker compose run --rm --build migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" up
 
 migrate-down:
-	docker compose run --rm migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" down 1
+	docker compose run --rm --build migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" down 1
 
 migrate-version:
-	docker compose run --rm migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" version
+	docker compose run --rm --build migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" version
 
 migrate-force:
 	@test -n "$(version)" || (echo "Usage: make migrate-force version=1" && exit 1)
-	docker compose run --rm migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" force $(version)
+	docker compose run --rm --build migrate -path /migrations -database "$(DOCKER_DATABASE_URL)" force $(version)
