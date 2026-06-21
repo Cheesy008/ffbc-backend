@@ -24,6 +24,32 @@ services:
       - go_mod_cache:/go/pkg/mod
       - go_build_cache:/root/.cache/go-build
 
+  adminctl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: adminctl
+    profiles: ["tools"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ffbc
+      DB_USER: ffbc
+      DB_PASSWORD: ffbc
+      DB_SSLMODE: disable
+
+  migrate:
+    image: migrate/migrate:v4.18.3
+    profiles: ["tools"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ${MIGRATIONS_DIR:-./migrations}:/migrations
+
   postgres:
     image: postgres:17
     container_name: ffbc-postgres

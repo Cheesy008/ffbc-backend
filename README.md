@@ -5,13 +5,11 @@
 
 - Go 1.26+
 - Docker и Docker Compose
-- [golang-migrate](https://github.com/golang-migrate/migrate) для работы с миграциями через Makefile
 - [sqlc](https://sqlc.dev/) для регенерации PostgreSQL-кода
 
 Установка CLI:
 
 ```bash
-go install -tags postgres github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
@@ -59,10 +57,10 @@ make migrate-up
 Создать администратора:
 
 ```bash
-go run ./cmd/adminctl create-admin \
-  --email admin@example.com \
-  --password 'change-me' \
-  --display-name 'Administrator'
+make create-admin \
+  email=admin@example.com \
+  password='change-me' \
+  display_name='Administrator'
 ```
 
 Параметры:
@@ -74,17 +72,23 @@ go run ./cmd/adminctl create-admin \
 | `--display-name` | Нет | Отображаемое имя |
 
 
-Можно собрать отдельный бинарный файл:
+Для запуска произвольной команды `adminctl` внутри контейнера:
 
 ```bash
-go build -o adminctl ./cmd/adminctl
-
-./adminctl create-admin \
-  --email admin@example.com \
-  --password 'change-me'
+make adminctl args='create-admin --email admin@example.com --password change-me'
 ```
 
 После успешного выполнения CLI выводит ID и email созданного администратора.
+
+Миграции также запускаются внутри отдельного Docker-контейнера:
+
+```bash
+make migrate-up
+make migrate-down
+make migrate-version
+make migrate-force version=2
+make migrate-create name=add_example_table
+```
 
 ## Работа с sqlc
 

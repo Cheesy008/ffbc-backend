@@ -7,7 +7,8 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/app ./cmd/app
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -o /out/app ./cmd/app && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -o /out/adminctl ./cmd/adminctl
 
 FROM golang:1.26 AS dev
 
@@ -16,6 +17,14 @@ WORKDIR /app
 RUN go install github.com/air-verse/air@latest
 
 CMD ["air", "-c", ".air.toml"]
+
+FROM gcr.io/distroless/base-debian12 AS adminctl
+
+WORKDIR /app
+
+COPY --from=builder /out/adminctl /app/adminctl
+
+ENTRYPOINT ["/app/adminctl"]
 
 FROM gcr.io/distroless/base-debian12
 

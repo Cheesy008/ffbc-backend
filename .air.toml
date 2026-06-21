@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/app ./cmd/app"
+cmd = "go build -buildvcs=false -o ./tmp/app ./cmd/app"
 bin = "./tmp/app"
 include_ext = ["go", "tpl", "tmpl", "html"]
 exclude_dir = ["tmp", "vendor", ".git", ".idea"]
